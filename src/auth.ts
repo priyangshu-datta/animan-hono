@@ -11,7 +11,6 @@ import { Hono } from "hono";
 import dayjs from "dayjs";
 import { html } from "hono/html";
 import ky from "ky";
-import fs from "node:fs/promises";
 import { getGqlQuery } from "./util";
 
 export const OAuthMiddleware = createMiddleware(async (c, next) => {
@@ -26,10 +25,11 @@ export const OAuthMiddleware = createMiddleware(async (c, next) => {
       process.env["PAUSED_URL"] = c.req.path;
       return c.redirect("/auth");
     } else {
-      const [token, id, name] = anilistUser.split(";");
+      const [token, id, name, avatar] = anilistUser.split(";");
       c.set("anilist_token", token);
       c.set("user_id", parseInt(id));
       c.set("name", name);
+      c.set("avatar", avatar);
     }
   }
   await next();
@@ -60,23 +60,20 @@ anilistOAuth.get("/callback", async (c) => {
     .json();
 
   const user_json = await ky
-    .post<{ data: { Viewer: { id: number; name: string } } }>(
-      Anilist.resourceUrl,
-      {
-        headers: {
-          Authorization: `Bearer ${token_json.access_token}`,
-        },
-        json: {
-          query: await getGqlQuery("user"),
-        },
-      }
-    )
+    .post<AnilistUser>(Anilist.resourceUrl, {
+      headers: {
+        Authorization: `Bearer ${token_json.access_token}`,
+      },
+      json: {
+        query: await getGqlQuery("user"),
+      },
+    })
     .json();
 
   await setSignedCookie(
     c,
     anilistCookieName,
-    `${token_json.access_token};${user_json.data.Viewer.id};${user_json.data.Viewer.name}`,
+    `${token_json.access_token};${user_json.data.Viewer.id};${user_json.data.Viewer.name};${user_json.data.Viewer.avatar.medium}`,
     cookieSecret,
     {
       httpOnly: true,

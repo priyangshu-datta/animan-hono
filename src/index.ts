@@ -6,7 +6,6 @@ import { contextStorage, getContext } from "hono/context-storage";
 import { anilistCookieName, cookieSecret } from "./anilist_options";
 import { OAuthMiddleware, anilistOAuth } from "./auth";
 import fs from "node:fs/promises";
-import ejs from "ejs";
 import current_warching from "./controllers/current_watching";
 import { getView } from "./util";
 import { serveStatic } from "hono/serve-static";
@@ -53,6 +52,7 @@ app.get("/home", async (c) => {
     getView("home", {
       name: getContext<Env>().var.name,
       id: getContext<Env>().var.user_id,
+      avatar: getContext<Env>().var.avatar,
     })
   );
 });

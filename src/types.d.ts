@@ -10,6 +10,10 @@ type Env = {
     anilist_token: string;
     user_id: number;
     name: string;
+    avatar: {
+      medium: string;
+      large: string;
+    };
   };
 };
 
@@ -28,6 +32,16 @@ type CurrentWatching = {
           type: ["ANIME" | "MANGA"];
         };
       };
+    };
+  };
+};
+
+type AnilistUser = {
+  data: {
+    Viewer: {
+      id: number;
+      name: string;
+      avatar: { large: string; medium: string };
     };
   };
 };
