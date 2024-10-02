@@ -1,0 +1,35 @@
+query UserMediaByStatus(
+  $userId: Int!
+  $status: MediaListStatus!
+  $type: MediaType!
+  $page: Int = 1
+  $limit: Int = 10
+) {
+  Page(page: $page, perPage: $limit) {
+    pageInfo {
+      currentPage
+      hasNextPage
+    }
+    mediaList(
+      status: $status
+      userId: $userId
+      type: $type
+      sort: UPDATED_TIME_DESC
+    ) {
+      media {
+        id
+        idMal
+        title {
+          english
+          romaji
+        }
+        coverImage {
+          large
+        }
+        description
+        siteUrl
+        type
+      }
+    }
+  }
+}

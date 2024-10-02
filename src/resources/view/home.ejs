@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= name %> - AniMan</title>
+    <style>
+      body {
+        background-color: black;
+        display: flex;
+        height: 100dvh;
+        margin: 0;
+        padding: 0;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <form method="post" action="logout">
+      <button type="submit">Logout</button>
+    </form>
+    <section>
+      <p>ID: <%= id %></p>
+      <p>Name: <%= name %></p>
+    </section>
+  </body>
+</html>

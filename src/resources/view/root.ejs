@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AniMan - Review Animes and Mangas granually.</title>
+    <style>
+      body {
+        display: flex;
+        height: 100dvh;
+        margin: 0;
+        padding: 0;
+        align-items: center;
+        justify-content: center;
+        background-color: black;
+        color: white;
+      }
+      form {
+        display: flex;
+
+        & fieldset {
+          border-radius: 10px;
+        }
+
+        & button {
+          margin: auto;
+          background-color: grey;
+          border: none;
+          border-radius: 999px;
+          padding-inline: 1rem;
+          padding-block: 0.5rem;
+          cursor: pointer;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <form action="/auth" id="anilist_login_btn">
+      <fieldset>
+        <p>Sign in with Ani<span style="color: #02a9ff">List</span></p>
+        <button type="submit" style="display: flex; gap: 0.5rem">
+          <img
+            src="https://anilist.co/img/icons/icon.svg"
+            alt="Anilist Logo"
+            height="20px"
+          />
+          Sign in
+        </button>
+      </fieldset>
+    </form>
+
+    <script>
+      const form = document.getElementById("anilist_login_btn");
+      form.onsubmit = () => {
+        form.querySelector("button").innerHTML =
+          "Signing in... <img src='/static/assets/loading_ripple.gif' alt='loading icon' style='height: 20px;'>";
+        form.querySelector("button").disabled = true;
+      };
+    </script>
+  </body>
+</html>
