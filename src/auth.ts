@@ -22,6 +22,7 @@ export const OAuthMiddleware = createMiddleware(async (c, next) => {
     );
 
     if (!anilistUser) {
+      // TODO: implement a storage to make the following unique for each connection. You can delete from storage once auth is done
       process.env["PAUSED_URL"] = c.req.path;
       return c.redirect("/auth");
     } else {

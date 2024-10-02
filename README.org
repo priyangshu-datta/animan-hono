@@ -1,0 +1,1 @@
+Re-creating AniMan but without the burden (I took this upon myself) of any frontend frameworks, using Hono.

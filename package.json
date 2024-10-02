@@ -1,5 +1,5 @@
 {
-  "name": "hono",
+  "name": "animan",
   "scripts": {
     "dev": "tsx watch --env-file=.env src/index.ts"
   },
