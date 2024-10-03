@@ -7,34 +7,43 @@ import {
   tokenRequestBody,
 } from "./anilist_options";
 import { protectedRoutes } from "./routes";
-import { Hono } from "hono";
+import { Context, Hono } from "hono";
 import dayjs from "dayjs";
 import { html } from "hono/html";
 import ky from "ky";
-import { getGqlQuery } from "./util";
+import { getGqlQuery, getGqlResult } from "./util";
+import { AnilistTokenResponse, AnilistUser, Env } from "./types";
 
-export const OAuthMiddleware = createMiddleware(async (c, next) => {
-  if (protectedRoutes.includes(c.req.path)) {
-    const anilistUser = await getSignedCookie(
-      c,
-      cookieSecret,
-      anilistCookieName
-    );
+const urlStateBeforeAuth: Map<string, string> = new Map();
 
-    if (!anilistUser) {
-      // TODO: implement a storage to make the following unique for each connection. You can delete from storage once auth is done
-      process.env["PAUSED_URL"] = c.req.path;
-      return c.redirect("/auth");
-    } else {
-      const [token, id, name, avatar] = anilistUser.split(";");
-      c.set("anilist_token", token);
-      c.set("user_id", parseInt(id));
-      c.set("name", name);
-      c.set("avatar", avatar);
+export const OAuthMiddleware = createMiddleware(
+  async (c: Context<Env>, next) => {
+    if (protectedRoutes.includes(c.req.path)) {
+      const anilistUser = await getSignedCookie(
+        c,
+        cookieSecret,
+        anilistCookieName
+      );
+
+      if (!anilistUser) {
+        const urlState = c.req.path;
+        const remoteIp = c.env.incoming.socket.remoteAddress;
+        const userAgent = c.req.header("User-Agent");
+
+        urlStateBeforeAuth.set(`${remoteIp}@${userAgent}`, urlState);
+
+        return c.redirect("/auth");
+      } else {
+        const [token, id, name, avatar] = anilistUser.split(";");
+        c.set("anilist_token", token);
+        c.set("user_id", parseInt(id));
+        c.set("name", name);
+        c.set("avatar", avatar);
+      }
     }
+    await next();
   }
-  await next();
-});
+);
 
 export const anilistOAuth = new Hono();
 
@@ -52,7 +61,7 @@ anilistOAuth.get("/", async (c) => {
   return c.redirect(Anilist.authorizeUrl);
 });
 
-anilistOAuth.get("/callback", async (c) => {
+anilistOAuth.get("/callback", async (c: Context<Env>) => {
   const [code, ..._rest] = c.req.queries("code") ?? [];
   const token_json = await ky
     .post<AnilistTokenResponse>(Anilist.tokenUrl, {
@@ -60,16 +69,11 @@ anilistOAuth.get("/callback", async (c) => {
     })
     .json();
 
-  const user_json = await ky
-    .post<AnilistUser>(Anilist.resourceUrl, {
-      headers: {
-        Authorization: `Bearer ${token_json.access_token}`,
-      },
-      json: {
-        query: await getGqlQuery("user"),
-      },
-    })
-    .json();
+  const user_json: AnilistUser = await getGqlResult(
+    await getGqlQuery("user"),
+    {},
+    token_json.access_token
+  );
 
   await setSignedCookie(
     c,
@@ -85,12 +89,17 @@ anilistOAuth.get("/callback", async (c) => {
     }
   );
 
+  const remoteIp = c.env.incoming.socket.remoteAddress;
+  const userAgent = c.req.header("User-Agent");
+  const urlState = urlStateBeforeAuth.get(`${remoteIp}@${userAgent}`);
+  urlStateBeforeAuth.delete(`${remoteIp}@${userAgent}`);
+
   return c.html(
     html`<!DOCTYPE html>
       <html>
         <head>
           <script>
-            window.location = "${process.env["PAUSED_URL"] ?? "/home"}";
+            window.location = "${urlState ?? "/home"}";
           </script>
         </head>
         <body

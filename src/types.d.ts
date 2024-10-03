@@ -1,3 +1,5 @@
+import { HttpBindings } from "@hono/node-server";
+
 type AnilistTokenResponse = {
   token_type: "Bearer";
   expires_in: number;
@@ -6,14 +8,12 @@ type AnilistTokenResponse = {
 };
 
 type Env = {
+  Bindings: HttpBindings;
   Variables: {
     anilist_token: string;
     user_id: number;
     name: string;
-    avatar: {
-      medium: string;
-      large: string;
-    };
+    avatar: string;
   };
 };
 

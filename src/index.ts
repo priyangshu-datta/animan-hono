@@ -10,6 +10,7 @@ import current_warching from "./controllers/current_watching";
 import { getView } from "./util";
 import { serveStatic } from "hono/serve-static";
 import { stream } from "hono/streaming";
+import { CurrentWatching, Env } from "./types";
 
 const app = new Hono<Env>();
 app.use(contextStorage());

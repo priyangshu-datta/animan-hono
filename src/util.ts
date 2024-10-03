@@ -3,6 +3,7 @@ import { Anilist } from "./anilist_options";
 import { getContext } from "hono/context-storage";
 import ky from "ky";
 import ejs from "ejs";
+import { Env } from "./types";
 
 /**
  * Get the GraphQL queries from disk.
@@ -16,16 +17,20 @@ export const getGqlQuery = async (filePath: string) => {
  * Get the result from Anilist for the given GQL query.
  * @param query GraphQL query string
  * @param variables GraphQL variables in quey string
+ * @param access_token Anilist access_token (optional), here for development
  * @returns result in json
  */
 export const getGqlResult = async <T>(
   query: string,
-  variables: Record<string, number | string>
+  variables: Record<string, number | string>,
+  access_token: undefined | string = undefined
 ) => {
   return await ky
     .post<T>(Anilist.resourceUrl, {
       headers: {
-        Authorization: `Bearer ${getContext<Env>().var.anilist_token}`,
+        Authorization: `Bearer ${
+          access_token ?? getContext<Env>().var.anilist_token
+        }`,
       },
       json: {
         query,
