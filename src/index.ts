@@ -11,6 +11,7 @@ import { getView } from "./util";
 import { serveStatic } from "hono/serve-static";
 import { stream } from "hono/streaming";
 import { CurrentWatching, Env } from "./types";
+import { HTTPException } from "hono/http-exception";
 
 const app = new Hono<Env>();
 app.use(contextStorage());
@@ -44,16 +45,27 @@ app.get("/", async (c) => {
 });
 
 app.get("/current", async (c) => {
-  const data: CurrentWatching["data"] = await current_warching();
+  const type = c.req.query("type");
+  if (type !== "ANIME" && type !== "MANGA") {
+    throw new HTTPException(400, {
+      cause: "@param type error",
+      message: "type can be either ANIME or MANGA",
+    });
+  }
+
+  const data: CurrentWatching["data"] = await current_warching(type);
   return c.html(html`${JSON.stringify(data, null, 4)}`);
 });
 
 app.get("/home", async (c) => {
+  const animeData: CurrentWatching["data"] = await current_warching("ANIME");
+  const mangaData: CurrentWatching["data"] = await current_warching("MANGA");
   return c.html(
     getView("home", {
       name: getContext<Env>().var.name,
       id: getContext<Env>().var.user_id,
       avatar: getContext<Env>().var.avatar,
+      current: { anime: animeData, manga: mangaData },
     })
   );
 });
