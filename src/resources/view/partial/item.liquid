@@ -1,0 +1,14 @@
+{% assign m = media.media %}
+
+<article class="no-padding">
+  <img class="responsive large" src="{{ m.coverImage.large }}">
+  <div class="absolute bottom left right padding bottom-shadow white-text">
+    <div style="width: 10rem; display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: -webkit-box; -webkit-box-orient: vertical ;-webkit-line-clamp: 2;">{{ m.title.romaji }}</div>
+      <div class="max"></div>
+      <button class="circle transparent">
+        <i>more_vert</i>
+      </button>
+    </nav>
+  </div>
+</article>

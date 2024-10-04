@@ -1,0 +1,52 @@
+{% layout 'root' %}
+
+{% block head %}
+  <title>{{ name | capitalize }}
+    - AniMan</title>
+  <style></style>
+{% endblock %}
+
+{% block %}
+  <header>
+    <nav>
+      <button class="circle transparent">
+        <i>menu</i>
+      </button>
+      <h5 class="max center-align"></h5>
+      <button class="circle transparent">
+        <img class="responsive" src="{{ avatar }}">
+        <menu class="no-wrap left">
+          <a href="/logout">Logout</a>
+        </menu>
+      </button>
+    </nav>
+  </header>
+  {% render 'accordian'
+    , num: 10
+    , heading: "Anime"
+    , open: "open"
+    , medias: current.anime.Page.mediaList %}
+  {% render 'accordian'
+    , num: 10
+    , heading: "Manga"
+    , open: ""
+    , medias: current.manga.Page.mediaList %}
+
+
+  <script>
+    // https://www.freecodecamp.org/news/create-html-accordions-with-and-without-javascript/
+      const summaries = document.querySelectorAll(`summary`)
+      summaries.forEach((summary)=>{
+        summary.addEventListener('click', openCloseDetails)
+      })
+    
+      function openCloseDetails(){
+        summaries.forEach((summary) =>{
+            let details = summary.parentNode;
+            if(details != this.parentNode){
+            details.removeAttribute('open')
+          }
+        })
+      }
+  </script>
+{% endblock %}

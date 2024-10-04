@@ -6,9 +6,9 @@
   "dependencies": {
     "@hono/node-server": "^1.13.1",
     "dayjs": "^1.11.13",
-    "ejs": "^3.1.10",
     "hono": "^4.6.3",
-    "ky": "^1.7.2"
+    "ky": "^1.7.2",
+    "liquidjs": "^10.17.0"
   },
   "devDependencies": {
     "@types/ejs": "^3.1.5",

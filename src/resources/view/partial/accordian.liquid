@@ -1,0 +1,14 @@
+<details
+  {{ open }}
+  class="border accordion"
+  style="padding: 10px;">
+  <summary class="none">
+    <nav style="padding: 10px;">
+      <div class="max">{{ heading }}</div>
+      <i>expand_more</i>
+    </nav>
+  </summary>
+  <div class="row scroll accordion-content" style="padding: 2px;">
+    {% render 'item' for medias as media %}
+  </div>
+</details>

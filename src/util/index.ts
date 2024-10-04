@@ -1,9 +1,9 @@
 import fs from "node:fs/promises";
-import { Anilist } from "./anilist_options";
+import { Anilist } from "../anilist_options";
 import { getContext } from "hono/context-storage";
 import ky from "ky";
-import ejs from "ejs";
-import { Env } from "./types";
+import { Env } from "../types";
+import { viewEngine } from "./helper";
 
 /**
  * Get the GraphQL queries from disk.
@@ -41,7 +41,7 @@ export const getGqlResult = async <T>(
 };
 
 /**
- * Get the rendered HTML (view) from the ejs file.
+ * Get the rendered HTML (view) from the liquid file.
  * @param viewPath path of the view file
  * @param variables data to be used in the view file
  * @returns html string
@@ -50,9 +50,6 @@ export const getView = async (
   viewPath: string,
   variables: Record<string, unknown> = {}
 ) => {
-  const ejsString = (
-    await fs.readFile(`src/resources/view/${viewPath}.ejs`)
-  ).toString();
-  const renderedHTML = ejs.render(ejsString, variables);
-  return renderedHTML;
+  const engine = viewEngine();
+  return await engine.renderFile(viewPath, variables);
 };
