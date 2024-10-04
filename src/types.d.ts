@@ -21,7 +21,7 @@ type CurrentWatching = {
   data: {
     Page: {
       pageInfo: { currentPage: number; hasNextPage: boolean };
-      medaList: {
+      mediaList: {
         media: {
           id: number;
           idMal: number;
