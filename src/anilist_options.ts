@@ -1,5 +1,3 @@
-import { HTTPException } from "hono/http-exception";
-
 const cookieSecret = process.env.COOKIE_SECRET!;
 const anilistClientId = process.env.ANLIST_CLIENT_CODE;
 const anilistClientSecret = process.env.ANILIST_CLIENT_SECRET;
